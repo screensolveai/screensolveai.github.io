@@ -1,1 +1,1 @@
-# screensolveai.github.com
+# screensolveai.github.io
