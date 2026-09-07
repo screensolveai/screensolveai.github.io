@@ -1,10 +1,1016 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>My GitHub Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen AI Assistant - Puter.js Edition</title>
+    
+    <!-- Puter.js Integration -->
+    <script src="https://js.puter.com/v2/"></script>
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #4338ca;
+            --secondary: #06b6d4;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .app-container {
+            background: var(--surface);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            width: 100%;
+            max-width: 1400px;
+            height: 95vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            min-height: 60px;
+            flex-shrink: 0;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header h1 .icon {
+            font-size: 24px;
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            gap: 0;
+            min-height: 0;
+        }
+
+        /* Left sidebar - vertical */
+        .sidebar {
+            width: 200px;
+            background: var(--background);
+            border-right: 1px solid var(--border);
+            padding: 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+        }
+
+        .section h3 {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 8px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 5px;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 4px;
+            margin-top: 4px;
+        }
+
+        .quick-action-btn {
+            padding: 5px 8px;
+            font-size: 10px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .quick-action-btn:hover {
+            background: var(--background);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Main chat area - takes remaining space */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            gap: 10px;
+            background: white;
+            min-width: 0;
+            min-height: 0;
+        }
+
+        .screen-preview {
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            min-height: 100px;
+            max-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .screen-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .screen-preview .placeholder {
+            color: white;
+            opacity: 0.5;
+            font-size: 12px;
+        }
+
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #fafbfc;
+            border-radius: 8px;
+            min-height: 0;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            animation: messageIn 0.3s ease-out;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
+            font-weight: 500;
+        }
+
+        .message.ai {
+            align-self: flex-start;
+            background: white;
+            border: 2px solid var(--border);
+            border-bottom-left-radius: 4px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .message .timestamp {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-top: 5px;
+            display: block;
+            font-weight: normal;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+
+        .input-area textarea {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            font-size: 13px;
+            resize: none;
+            height: 50px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .input-area textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-area button {
+            width: auto;
+            height: 50px;
+            margin: 0;
+            padding: 0 15px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 6px;
+            margin-top: 5px;
+            flex-shrink: 0;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            animation: slideIn 0.3s ease-out;
+            display: none;
+            z-index: 1000;
+        }
+
+        .toast.error {
+            background: var(--error);
+        }
+
+        .info-banner {
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            margin-bottom: 4px;
+        }
+
+        /* Ad Banner */
+        .ad-banner {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border: 2px solid #d97706;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-shrink: 0;
+        }
+
+        .ad-banner:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .ad-banner .ad-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #78350f;
+            margin-bottom: 2px;
+        }
+
+        .ad-banner .ad-subtitle {
+            font-size: 10px;
+            color: #92400e;
+        }
+
+        .ad-banner .ad-link {
+            display: inline-block;
+            margin-top: 4px;
+            padding: 3px 10px;
+            background: white;
+            color: #d97706;
+            text-decoration: none;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 120px;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            
+            .section {
+                flex: 1;
+                min-width: 120px;
+            }
+            
+            .app-container {
+                height: 100vh;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello, World!</h1>
-    <p>My website is officially hosted on GitHub Pages.</p>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <span class="icon">🤖</span>
+                Screen AI Assistant
+            </h1>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span id="statusText">Ready</span>
+            </div>
+        </div>
+
+        <!-- Ad Banner -->
+        <div class="ad-banner" onclick="window.open('https://beacons.ai/signup?c=liam_whooley', '_blank')">
+            <div class="ad-title">🚀 Join Beacons.ai Today!</div>
+            <div class="ad-subtitle">Create your professional link-in-bio page and grow your audience</div>
+            <a href="https://beacons.ai/signup?c=liam_whooley" class="ad-link" onclick="event.stopPropagation();" target="_blank">
+                Sign Up Now →
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Puter.js Status -->
+                <div class="section">
+                    <div class="info-banner">
+                        ✨ <strong>Puter.js AI Built-in!</strong><br>
+                        Free AI - No keys needed
+                    </div>
+                </div>
+
+                <!-- Screen Sharing Section -->
+                <div class="section">
+                    <h3>📺 Screen</h3>
+                    <button id="startShareBtn" class="btn btn-primary" onclick="startScreenShare()">
+                        🖥️ Start Share
+                    </button>
+                    <button id="stopShareBtn" class="btn btn-danger" onclick="stopScreenShare()" style="display:none;">
+                        ⏹ Stop
+                    </button>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="captureScreenshot()">📸 Capture</button>
+                        <button class="quick-action-btn" onclick="toggleAutoCapture()">🔄 Auto: Off</button>
+                    </div>
+                </div>
+
+                <!-- Quick Questions -->
+                <div class="section">
+                    <h3>💡 Quick</h3>
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" onclick="quickAsk('What do you see on my screen?')">👁️ Describe</button>
+                        <button class="quick-action-btn" onclick="quickAsk('How do I fix this error?')">🔧 Fix Error</button>
+                        <button class="quick-action-btn" onclick="quickAsk('Explain this like I\'m a beginner')">📚 Explain</button>
+                        <button class="quick-action-btn" onclick="quickAsk('What should I do next?')">➡️ Next</button>
+                        <button class="quick-action-btn" onclick="quickAsk('Summarize the main points')">📝 Summary</button>
+                        <button class="quick-action-btn" onclick="quickAsk('Are there any issues?')">⚠️ Issues</button>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="section">
+                    <h3>⚙️ Settings</h3>
+                    <label style="font-size: 10px; display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+                        <input type="checkbox" id="voiceEnabled" checked>
+                        Voice
+                    </label>
+                    <label style="font-size: 10px; display: flex; align-items: center; gap: 5px; margin-bottom: 5px;">
+                        <input type="checkbox" id="saveHistory" checked>
+                        History
+                    </label>
+                    <label style="font-size: 10px; display: flex; align-items: center; gap: 5px;">
+                        <input type="checkbox" id="useVision" checked>
+                        Vision
+                    </label>
+                </div>
+            </div>
+
+            <!-- Chat Area (Vertical split - takes most space) -->
+            <div class="chat-area">
+                <!-- Screen Preview -->
+                <div class="screen-preview" id="screenPreview">
+                    <div class="placeholder">📺 Screen preview will appear here</div>
+                    <video id="screenVideo" autoplay muted style="display:none;"></video>
+                </div>
+
+                <!-- Messages - Scrollable area -->
+                <div class="messages" id="messagesContainer">
+                    <div class="message ai">
+                        👋 Hello! I'm your AI assistant powered by Puter.js. Start sharing your screen and ask me anything about what you see!
+                    </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div>
+                    <span>AI is analyzing your screen...</span>
+                </div>
+
+                <!-- Input Area - Always visible at bottom -->
+                <div class="input-area">
+                    <textarea id="questionInput" placeholder="Type your question here..." onkeydown="handleKeyDown(event)"></textarea>
+                    <button class="btn btn-primary" onclick="sendQuestion()">
+                        ➤ Send
+                    </button>
+                    <button class="btn btn-secondary" onclick="startVoiceInput()">
+                        🎤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Global variables
+        let mediaStream = null;
+        let screenStream = null;
+        let autoCapture = false;
+        let autoCaptureInterval = null;
+        let lastScreenshot = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+
+        // Initialize Puter.js
+        async function initPuter() {
+            try {
+                if (typeof puter !== 'undefined') {
+                    console.log('Puter.js loaded successfully');
+                    setStatus('AI Ready (Puter.js)', 'ready');
+                } else {
+                    console.error('Puter.js not loaded');
+                    setStatus('Error: Puter.js not loaded', 'error');
+                    showToast('Failed to load Puter.js', true);
+                }
+            } catch (error) {
+                console.error('Puter.js initialization error:', error);
+                showToast('Failed to initialize Puter.js', true);
+            }
+        }
+
+        // Load saved history
+        function loadHistory() {
+            const history = localStorage.getItem('screenAIChatHistory');
+            if (history) {
+                const messages = JSON.parse(history);
+                const container = document.getElementById('messagesContainer');
+                container.innerHTML = '';
+                messages.forEach(msg => addMessage(msg.text, msg.type, false));
+            }
+        }
+
+        // Save chat history
+        function saveChatHistory() {
+            if (!document.getElementById('saveHistory').checked) return;
+            
+            const container = document.getElementById('messagesContainer');
+            const messages = [];
+            
+            container.querySelectorAll('.message').forEach(msg => {
+                const type = msg.classList.contains('user') ? 'user' : 'ai';
+                const text = msg.textContent.replace(msg.querySelector('.timestamp')?.textContent || '', '').trim();
+                messages.push({ text, type });
+            });
+            
+            // Keep only last 50 messages
+            const recentMessages = messages.slice(-50);
+            localStorage.setItem('screenAIChatHistory', JSON.stringify(recentMessages));
+        }
+
+        // Start screen sharing
+        async function startScreenShare() {
+            try {
+                screenStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: {
+                        cursor: 'always'
+                    },
+                    audio: false
+                });
+
+                const video = document.getElementById('screenVideo');
+                video.srcObject = screenStream;
+                video.style.display = 'block';
+                document.querySelector('.placeholder').style.display = 'none';
+
+                document.getElementById('startShareBtn').style.display = 'none';
+                document.getElementById('stopShareBtn').style.display = 'block';
+                
+                setStatus('Screen sharing active', 'active');
+                showToast('Screen sharing started!', false);
+
+                // Listen for stream end
+                screenStream.getVideoTracks()[0].onended = () => {
+                    stopScreenShare();
+                };
+
+            } catch (error) {
+                console.error('Error sharing screen:', error);
+                showToast('Failed to start screen sharing', true);
+            }
+        }
+
+        // Stop screen sharing
+        function stopScreenShare() {
+            if (screenStream) {
+                screenStream.getTracks().forEach(track => track.stop());
+                screenStream = null;
+            }
+
+            const video = document.getElementById('screenVideo');
+            video.srcObject = null;
+            video.style.display = 'none';
+            document.querySelector('.placeholder').style.display = 'block';
+
+            document.getElementById('startShareBtn').style.display = 'block';
+            document.getElementById('stopShareBtn').style.display = 'none';
+            
+            setStatus('Screen sharing stopped', 'inactive');
+            showToast('Screen sharing stopped', false);
+        }
+
+        // Capture screenshot
+        function captureScreenshot() {
+            const video = document.getElementById('screenVideo');
+            
+            if (!video.srcObject) {
+                showToast('Please start screen sharing first', true);
+                return null;
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const screenshot = canvas.toDataURL('image/jpeg', 0.8);
+            lastScreenshot = screenshot;
+            
+            showToast('Screenshot captured!', false);
+            return screenshot;
+        }
+
+        // Toggle auto-capture
+        function toggleAutoCapture() {
+            autoCapture = !autoCapture;
+            const btn = event.target;
+            btn.textContent = `🔄 Auto: ${autoCapture ? 'On' : 'Off'}`;
+            
+            if (autoCapture) {
+                autoCaptureInterval = setInterval(() => {
+                    if (screenStream) {
+                        captureScreenshot();
+                    }
+                }, 5000);
+                showToast('Auto-capture enabled (every 5 seconds)', false);
+            } else {
+                clearInterval(autoCaptureInterval);
+                showToast('Auto-capture disabled', false);
+            }
+        }
+
+        // Send question using Puter.js AI
+        async function sendQuestion() {
+            const questionInput = document.getElementById('questionInput');
+            const question = questionInput.value.trim();
+            
+            if (!question) {
+                showToast('Please enter a question', true);
+                return;
+            }
+            
+            if (!screenStream) {
+                showToast('Please start screen sharing first', true);
+                return;
+            }
+
+            // Add user message
+            addMessage(question, 'user');
+            questionInput.value = '';
+
+            // Show loading indicator
+            showLoading(true);
+
+            try {
+                // Capture current screen
+                const screenshot = captureScreenshot();
+                
+                let response;
+                
+                if (screenshot && document.getElementById('useVision').checked) {
+                    // Use vision analysis with screenshot
+                    response = await analyzeWithPuterVision(question, screenshot);
+                } else {
+                    // Text-only response
+                    response = await analyzeWithPuterText(question);
+                }
+                
+                // Add AI response
+                addMessage(response, 'ai');
+                
+                // Speak if enabled
+                if (document.getElementById('voiceEnabled').checked) {
+                    speakText(response);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('Sorry, I encountered an error: ' + error.message, 'ai');
+                showToast('Error: ' + error.message, true);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // Analyze with Puter.js vision
+        async function analyzeWithPuterVision(question, screenshot) {
+            try {
+                setStatus('Analyzing with Puter AI Vision...', 'processing');
+                
+                // Convert base64 to blob
+                const base64Data = screenshot.split(',')[1];
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                
+                const byteArray = new Uint8Array(byteNumbers);
+                const imageBlob = new Blob([byteArray], { type: 'image/jpeg' });
+                
+                // Create a File object
+                const imageFile = new File([imageBlob], 'screenshot.jpg', { type: 'image/jpeg' });
+                
+                // Use Puter.js AI chat with image
+                const response = await puter.ai.chat(
+                    `The user asks: ${question}\n\nPlease analyze this screenshot carefully. Describe what you see and provide helpful, step-by-step guidance. Be concise but thorough.`,
+                    imageFile
+                );
+                
+                setStatus('Ready', 'ready');
+                return response.message?.content || response.text || response;
+                
+            } catch (error) {
+                console.error('Puter vision error:', error);
+                // Fallback to text-only if vision fails
+                return await analyzeWithPuterText(question + "\n\n[Note: Image analysis failed, responding based on text only]");
+            }
+        }
+
+        // Analyze with Puter.js text
+        async function analyzeWithPuterText(question) {
+            try {
+                setStatus('Analyzing with Puter AI...', 'processing');
+                
+                const response = await puter.ai.chat(
+                    `The user asks: ${question}\n\nPlease provide helpful, step-by-step guidance. Be concise but thorough.`
+                );
+                
+                setStatus('Ready', 'ready');
+                return response.message?.content || response.text || response;
+                
+            } catch (error) {
+                console.error('Puter text error:', error);
+                throw error;
+            }
+        }
+
+        // Quick ask
+        function quickAsk(question) {
+            document.getElementById('questionInput').value = question;
+            sendQuestion();
+        }
+
+        // Voice input
+        async function startVoiceInput() {
+            if (isRecording) {
+                stopVoiceInput();
+                return;
+            }
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    await transcribeWithPuter(audioBlob);
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                setStatus('Recording...', 'recording');
+                showToast('🎤 Recording... Click mic again to stop', false);
+
+            } catch (error) {
+                console.error('Error starting recording:', error);
+                showToast('Failed to start recording', true);
+            }
+        }
+
+        // Stop voice input
+        function stopVoiceInput() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                setStatus('Processing audio...', 'processing');
+            }
+        }
+
+        // Transcribe with Puter.js
+        async function transcribeWithPuter(audioBlob) {
+            try {
+                const audioFile = new File([audioBlob], 'audio.webm', { type: 'audio/webm' });
+                
+                const transcription = await puter.ai.txt2speech(audioFile);
+                
+                document.getElementById('questionInput').value = transcription.text || transcription;
+                setStatus('Ready', 'ready');
+                showToast('Transcription complete!', false);
+
+            } catch (error) {
+                console.error('Transcription error:', error);
+                setStatus('Error', 'error');
+                showToast('Voice transcription not available with Puter.js yet', true);
+                
+                // Fallback: Ask user to type
+                document.getElementById('questionInput').placeholder = 'Voice transcription failed. Please type your question...';
+            }
+        }
+
+        // Text-to-speech
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const preferredVoice = voices.find(voice => 
+                    voice.lang.startsWith('en') && voice.localService
+                );
+                if (preferredVoice) {
+                    utterance.voice = preferredVoice;
+                }
+                
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Add message to chat
+        function addMessage(text, type, save = true) {
+            const container = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const timestamp = new Date().toLocaleTimeString();
+            messageDiv.innerHTML = `${text}<span class="timestamp">${timestamp}</span>`;
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            if (save) {
+                saveChatHistory();
+            }
+        }
+
+        // Handle keyboard input
+        function handleKeyDown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendQuestion();
+            }
+        }
+
+        // Show loading indicator
+        function showLoading(show) {
+            const loading = document.getElementById('loadingIndicator');
+            if (show) {
+                loading.classList.add('active');
+            } else {
+                loading.classList.remove('active');
+            }
+        }
+
+        // Set status
+        function setStatus(text, type) {
+            const statusText = document.getElementById('statusText');
+            statusText.textContent = text;
+            
+            const statusDot = document.querySelector('.status-dot');
+            statusDot.style.background = {
+                'active': 'var(--success)',
+                'ready': 'var(--success)',
+                'inactive': 'var(--warning)',
+                'recording': 'var(--error)',
+                'processing': 'var(--warning)',
+                'error': 'var(--error)'
+            }[type] || 'var(--success)';
+        }
+
+        // Show toast notification
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast' + (isError ? ' error' : '');
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initPuter();
+            loadHistory();
+            setStatus('Ready', 'ready');
+            
+            window.addEventListener('beforeunload', () => {
+                if (screenStream) {
+                    screenStream.getTracks().forEach(track => track.stop());
+                }
+                if (autoCaptureInterval) {
+                    clearInterval(autoCaptureInterval);
+                }
+            });
+        });
+    </script>
 </body>
 </html>
