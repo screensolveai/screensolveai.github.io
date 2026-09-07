@@ -212,6 +212,26 @@
             color: var(--primary);
         }
 
+        /* Privacy Policy Link */
+        .privacy-link {
+            margin-top: auto;
+            text-align: center;
+            padding: 10px;
+            border-top: 1px solid var(--border);
+        }
+
+        .privacy-link a {
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 11px;
+            transition: color 0.3s;
+        }
+
+        .privacy-link a:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+
         /* Main chat area - takes remaining space */
         .chat-area {
             flex: 1;
@@ -545,6 +565,11 @@
                         <input type="checkbox" id="useVision" checked>
                         Vision
                     </label>
+                </div>
+
+                <!-- Privacy Policy Link -->
+                <div class="privacy-link">
+                    <a href="privacypolicy.html" target="_blank">🔒 Privacy Policy</a>
                 </div>
             </div>
 
