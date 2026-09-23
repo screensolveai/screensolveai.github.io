@@ -1,0 +1,111 @@
+# robots.txt for Screen AI Assistant
+# https://yourdomain.com/robots.txt
+# Last updated: 2026-08-15
+
+# ============================================================
+# GLOBAL RULES - ALL CRAWLERS
+# ============================================================
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /privacypolicy.html
+
+# Block sensitive and low-value directories
+Disallow: /admin/
+Disallow: /config/
+Disallow: /private/
+Disallow: /tmp/
+Disallow: /cache/
+Disallow: /cgi-bin/
+Disallow: /*.env$
+Disallow: /*.json$
+Disallow: /*.log$
+Disallow: /*?*sessionid=
+Disallow: /*?*token=
+
+# ============================================================
+# MAJOR SEARCH ENGINES - EXPLICITLY ALLOWED
+# ============================================================
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Disallow: /config/
+Disallow: /private/
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Disallow: /config/
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Allow: /
+
+User-agent: YandexBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# ============================================================
+# AI CRAWLERS - MANAGED ACCESS
+# ============================================================
+# Training crawlers - blocked by default (opt-out of AI training)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: meta-externalagent
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+# Search-linked AI agents - allowed (they send referral traffic)
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# ============================================================
+# SEO TOOLS & CRAWLERS
+# ============================================================
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# ============================================================
+# SITEMAP
+# ============================================================
+Sitemap: https://yourdomain.com/sitemap.xml
